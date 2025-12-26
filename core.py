@@ -25,11 +25,6 @@ class GeminiChat:
 
         logging.info("Initiated new chat model")
 
-    def _handle_exception(self, operation: str, e: Exception) -> None:
-        """Handles exceptions by raising a ValueError."""
-        logging.warning(f"Failed to {operation}: {e}")
-        raise ValueError(f"Failed to {operation}: {e}")
-
     def _get_model(self, generative_model: str = "gemini-1.5-flash") -> genai.GenerativeModel:
         """Gets a generative model instance."""
         try:
@@ -39,19 +34,19 @@ class GeminiChat:
                 model_name, safety_settings=self.safety_settings
             )
         except Exception as e:
-            self._handle_exception("get model", e)
+            logging.warning(f"Failed to get model: {e}")
+            raise ValueError(f"Failed to get model: {e}")
 
     def send_image(self, message_text: str | None = None) -> str:
         """Sends an image and message to the model and generates a response."""
         message_text = message_text or "Please describe this photo"
         try:
             model = self._get_model("gemini-pro-vision")
-            response = model.generate_content([message_text, self.image], stream=True)
-            response.resolve()
+            response = model.generate_content([message_text, self.image])
             logging.info("Recieved response from Gemini")
-            return "".join([text for text in response.text])
+            return response.text
         except Exception as e:
-            self._handle_exception("send image", e)
+            logging.warning(f"Failed to send image: {e}")
             return "Couldn't reach out to Google Gemini. Try Again..."
 
     def start_chat(self) -> None:
@@ -61,17 +56,16 @@ class GeminiChat:
             self.chat = model.start_chat(history=self.chat_history)
             logging.info("Start new conversation")
         except Exception as e:
-            self._handle_exception("start chat", e)
+            logging.warning(f"Failed to start chat: {e}")
 
     def send_message(self, message_text: str) -> str:
         """Sends a message to the chat session and returns the response."""
         try:
-            response = self.chat.send_message(message_text, stream=True)
-            response.resolve()
+            response = self.chat.send_message(message_text)
             logging.info("Recieved response from Gemini")
-            return "".join([text for text in response.text])
+            return response.text
         except Exception as e:
-            self._handle_exception("send message", e)
+            logging.warning(f"Failed to send message: {e}")
             return "Couldn't reach out to Google Gemini. Try Again..."
 
     def get_chat_title(self) -> str:
@@ -81,14 +75,14 @@ class GeminiChat:
                 "Write a one-line short title up to 10 words for this conversation in plain text."
             )
         except Exception as e:
-            self._handle_exception("get chat title", e)
+            logging.warning(f"Failed to get chat title: {e}")
 
     def get_chat_history(self):
         """Gets the chat history."""
         try:
             return self.chat.history
         except Exception as e:
-            self._handle_exception("get chat history", e)
+            logging.warning(f"Failed to get chat history: {e}")
 
     def close(self) -> None:
         """Closes the chat and cleans history."""
