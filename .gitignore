@@ -120,8 +120,7 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 *.db
-conversations_data.db
-*.pickle
+data/
 
 # Environments
 .env

@@ -4,5 +4,5 @@ services:
     build: .
     container_name: geminibot
     volumes:
-      - ./conversations_data.db:/usr/src/app/conversations_data.db
+      - ./data:/usr/src/app/data
     restart: unless-stopped

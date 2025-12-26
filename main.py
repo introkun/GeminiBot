@@ -125,7 +125,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    database = "./conversations_data.db"
+    database = "data/conversations_data.db"
 
     conn = create_connection(database)
     create_table(conn)

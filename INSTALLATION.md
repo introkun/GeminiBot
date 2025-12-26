@@ -69,9 +69,13 @@ To obtain your Telegram account ID, you can send a message to Show Json Bot in T
 
 If you want to modify user restrictions, you can examine the `restricted` decorator in the `bot/conversation_handlers.py` file.
 
-### Deployment with Docker
+**Deployment with Docker**
 
 You can also run GeminiBot using Docker and Docker Compose. This is the recommended way to deploy the bot in production.
+
+**Data Persistence:**
+
+The bot stores conversation data in the `data` directory. This directory is mounted as a volume in the Docker Compose configuration to ensure that your data is preserved even if the container is removed.
 
 **Prerequisites:**
 

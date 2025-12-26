@@ -10,6 +10,9 @@ COPY requirements.txt ./
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create data directory
+RUN mkdir -p /usr/src/app/data
+
 # Copy the rest of the application's code into the container at /usr/src/app
 COPY . .
 
