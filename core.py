@@ -30,7 +30,7 @@ class GeminiChat:
         logging.warning(f"Failed to {operation}: {e}")
         raise ValueError(f"Failed to {operation}: {e}")
 
-    def _get_model(self, generative_model: str = "gemini-pro") -> genai.GenerativeModel:
+    def _get_model(self, generative_model: str = "gemini-1.5-flash") -> genai.GenerativeModel:
         """Gets a generative model instance."""
         try:
             model_name = os.getenv("GEMINI_MODEL", generative_model)
@@ -57,7 +57,7 @@ class GeminiChat:
     def start_chat(self) -> None:
         """Starts a new chat session."""
         try:
-            model = self._get_model()
+            model = self._get_model("gemini-1.5-flash")
             self.chat = model.start_chat(history=self.chat_history)
             logging.info("Start new conversation")
         except Exception as e:
