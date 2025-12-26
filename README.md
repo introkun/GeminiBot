@@ -42,87 +42,56 @@ https://github.com/sudoAlireza/GeminiBot/assets/87416117/beeb0fd2-73c6-4631-baea
    pip install -r requirements.txt
    ```
 
-### Configuration
+### Environment Variables
 
-1. Create a file named `.env` in the project root and add your Telegram bot API token and Gemini API key:
+The bot is configured using environment variables. The following variables are required:
 
-   ```dotenv
-   TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
-   GEMINI_API_TOKEN=<Your Gemini API key>
-   GEMINI_MODEL=<Your Gemini Model (e.g., gemini-pro, gemini-1.5-flash)>
-   AUTHORIZED_USER=<Your Telegram account ID number>
-   ```
+-   `TELEGRAM_BOT_TOKEN`: Your Telegram bot token from BotFather.
+-   `GEMINI_API_TOKEN`: Your Gemini API key from Google AI Studio.
+-   `GEMINI_MODEL`: The Gemini model to use (e.g., `gemini-1.5-flash`).
+-   `AUTHORIZED_USER`: Your Telegram user ID to restrict bot access.
 
-2. Update the `safety_settings.json` file with appropriate safety settings for Gemini policies.
+### Local Development
 
-### Usage
-
-Run GeminiBot using:
+For local development, you can set the environment variables in your shell:
 
 ```bash
+export TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
+export GEMINI_API_TOKEN=<Your Gemini API key>
+export GEMINI_MODEL=<Your Gemini Model>
+export AUTHORIZED_USER=<Your Telegram account ID number>
 python main.py
 ```
 
-**Deployment with Docker**
+### Deployment with Docker
 
-You can also run GeminiBot using Docker and Docker Compose. This is the recommended way to deploy the bot in production.
+The recommended way to deploy the bot is using Docker and Docker Compose.
 
 **Data Persistence:**
 
 The bot stores conversation data in the `data` directory. This directory is mounted as a volume in the Docker Compose configuration to ensure that your data is preserved even if the container is removed.
 
-**Prerequisites:**
+**Configuration:**
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+When deploying with Docker, you should provide the required environment variables to the container. The recommended way to do this is through your orchestration platform (e.g., Portainer, Kubernetes) by setting the environment variables in the container's configuration.
 
-**Steps:**
+**Build and Run:**
 
-1.  **Provide Environment Variables:** The bot requires environment variables to be set for configuration. You can provide them in one of the following ways:
+```bash
+docker-compose up -d --build
+```
 
-    *   **Using a `.env` file (recommended):** Create a `.env` file in the project root as described in the "Configuration" section, and then run Docker Compose with the `--env-file` flag:
+The bot will now be running in the background. To view the logs, you can use the following command:
 
-        ```bash
-        docker-compose --env-file .env up -d --build
-        ```
+```bash
+docker-compose logs -f
+```
 
-    *   **Setting variables in your shell:** You can set the environment variables directly in your shell before running Docker Compose:
+To stop the bot, use the following command:
 
-        ```bash
-        export TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
-        export GEMINI_API_TOKEN=<Your Gemini API key>
-        export GEMINI_MODEL=<Your Gemini Model>
-        export AUTHORIZED_USER=<Your Telegram account ID number>
-        docker-compose up -d --build
-        ```
-
-    *   **Using `docker-compose run -e`:** You can pass the environment variables directly to the `run` command:
-
-        ```bash
-        docker-compose run -e TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token> \
-                             -e GEMINI_API_TOKEN=<Your Gemini API key> \
-                             -e GEMINI_MODEL=<Your Gemini Model> \
-                             -e AUTHORIZED_USER=<Your Telegram account ID number> \
-                             geminibot
-        ```
-
-2.  **Build and Run:** Once you have provided the environment variables, build and run the bot using Docker Compose:
-
-    ```bash
-    docker-compose up -d --build
-    ```
-
-3.  The bot will now be running in the background. To view the logs, you can use the following command:
-
-    ```bash
-    docker-compose logs -f
-    ```
-
-4.  To stop the bot, use the following command:
-
-    ```bash
-    docker-compose down
-    ```
+```bash
+docker-compose down
+```
 
 ## Features
 
