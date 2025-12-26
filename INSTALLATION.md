@@ -62,7 +62,7 @@ Your `.env` file should resemble the following:
 TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
 GEMINI_API_TOKEN=<Your Gemini API key>
 GEMINI_MODEL=<Your Gemini Model (e.g., gemini-flash-latest)>
-AUTHORIZED_USER=<Your Telegram account ID number>
+AUTHORIZED_USER=<your_user_id_1>,<your_user_id_2>
 ```
 
 To obtain your Telegram account ID, you can send a message to Show Json Bot in Telegram. It will show your account information in a JSON format, and you can find your account ID in the chat section of the JSON file that the bot responds with. Note that the account ID is different from your username and is not mutable for Telegram accounts unless you delete your account and create another one.
@@ -94,7 +94,7 @@ For local development, it's recommended to use a Python virtual environment to m
     export TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
     export GEMINI_API_TOKEN=<Your Gemini API key>
     export GEMINI_MODEL=<Your Gemini Model> # e.g., gemini-flash-latest
-    export AUTHORIZED_USER=<Your Telegram account ID number>
+    export AUTHORIZED_USER="<your_user_id_1>,<your_user_id_2>"
     ```
 
 4.  **Run the bot:**
@@ -110,7 +110,7 @@ The bot is configured using environment variables. The following variables are r
 -   `TELEGRAM_BOT_TOKEN`: Your Telegram bot token from BotFather.
 -   `GEMINI_API_TOKEN`: Your Gemini API key from Google AI Studio.
 -   `GEMINI_MODEL`: The Gemini model to use (e.g., `gemini-flash-latest`).
--   `AUTHORIZED_USER`: Your Telegram user ID to restrict bot access.
+-   `AUTHORIZED_USER`: A comma-separated list of your Telegram user IDs to restrict bot access.
 
 ### Deployment with Docker
 
@@ -153,7 +153,7 @@ Then, set the environment variables in your shell:
 export TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
 export GEMINI_API_TOKEN=<Your Gemini API key>
 export GEMINI_MODEL=<Your Gemini Model>
-export AUTHORIZED_USER=<Your Telegram account ID number>
+export AUTHORIZED_USER="<your_user_id_1>,<your_user_id_2>"
 ```
 In the next step install project reqirements with this code in your Virual environment:
 ```

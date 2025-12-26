@@ -38,7 +38,8 @@ def restricted(func):
     @wraps(func)
     async def wrapped(update, context, *args, **kwargs):
         user_id = update.effective_user.id
-        if user_id != int(os.getenv("AUTHORIZED_USER")):
+        authorized_users = [int(user_id.strip()) for user_id in os.getenv("AUTHORIZED_USER", "").split(',')]
+        if user_id not in authorized_users:
             logger.info(f"Unauthorized access denied for {user_id}.")
             await update.message.reply_animation(
                 "https://github.com/sudoAlireza/GeminiBot/assets/87416117/beeb0fd2-73c6-4631-baea-2e3e3eeb9319",
