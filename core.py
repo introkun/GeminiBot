@@ -1,6 +1,6 @@
 import json
 import os
-import google.generativeai as genai
+import google.genai as genai
 import logging
 
 logging.basicConfig(
