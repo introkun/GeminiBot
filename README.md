@@ -121,6 +121,52 @@ docker-compose down
 - Maintain conversation history for continuing or initiating new discussions
 - Send images with captions to receive responses based on the image content. For example, the bot can read text within images and convert it to text.
 
+## Internationalization (i18n)
+
+The bot supports multiple languages using `gettext` and `Babel`.
+
+### Adding a New Language
+
+To add a new language (e.g., Spanish - `es`):
+
+1.  **Initialize the new language catalog:**
+
+    ```bash
+    venv/bin/pybabel init -i locales/messages.pot -d locales -l es
+    ```
+
+2.  **Translate the strings:** Edit the newly created `locales/es/LC_MESSAGES/messages.po` file and translate the `msgid` strings into Spanish.
+
+3.  **Compile the translations:**
+
+    ```bash
+    venv/bin/pybabel compile -d locales
+    ```
+
+### Updating Existing Translations
+
+If you add new translatable strings to the code:
+
+1.  **Extract new strings to the POT file:**
+
+    ```bash
+    venv/bin/pybabel extract -F babel.cfg -o locales/messages.pot .
+    ```
+
+2.  **Update existing language catalogs:**
+
+    ```bash
+    venv/bin/pybabel update -i locales/messages.pot -d locales -l en # For English
+    venv/bin/pybabel update -i locales/messages.pot -d locales -l es # For Spanish (or other languages)
+    ```
+
+3.  **Translate new strings:** Edit the `.po` files for each language and translate the new `msgid` entries.
+
+4.  **Compile the translations:**
+
+    ```bash
+    venv/bin/pybabel compile -d locales
+    ```
 
 ## To-Do
 

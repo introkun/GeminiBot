@@ -1,5 +1,6 @@
 import os
 import logging
+import gettext
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -22,6 +23,11 @@ from bot.conversation_handlers import (
     delete_conversation_handler,
     done,
 )
+
+# Setup translation
+localedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "locales")
+translate = gettext.translation("messages", localedir, fallback=True)
+_ = translate.gettext
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO

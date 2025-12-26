@@ -12,6 +12,7 @@ from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
 import PIL.Image
 
+from main import _
 from core import GeminiChat
 from database.database import (
     create_conversation,
@@ -60,17 +61,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
         [
             InlineKeyboardButton(
-                "Start New Conversation", callback_data="New_Conversation"
+                _("Start New Conversation"), callback_data="New_Conversation"
             ),
             InlineKeyboardButton(
-                "Image Description", callback_data="Image_Description"
+                _("Image Description"), callback_data="Image_Description"
             ),
         ],
-        [InlineKeyboardButton("Chat History", callback_data="PAGE#1")],
+        [InlineKeyboardButton(_("Chat History"), callback_data="PAGE#1")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(
-        text="Hi. It's Gemini Chat Bot. You can ask me anything and talk to me about what you want",
+        text=_("Hi. It's Gemini Chat Bot. You can ask me anything and talk to me about what you want"),
         reply_markup=reply_markup,
     )
 
@@ -130,17 +131,17 @@ async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE, conn) -
     keyboard = [
         [
             InlineKeyboardButton(
-                "Start New Conversation", callback_data="New_Conversation"
+                _("Start New Conversation"), callback_data="New_Conversation"
             )
         ],
-        [InlineKeyboardButton("Image Description", callback_data="Image_Description")],
-        [InlineKeyboardButton("Chat History", callback_data="PAGE#1")],
-        [InlineKeyboardButton("Start Again", callback_data="Start_Again")],
+        [InlineKeyboardButton(_("Image Description"), callback_data="Image_Description")],
+        [InlineKeyboardButton(_("Chat History"), callback_data="PAGE#1")],
+        [InlineKeyboardButton(_("Start Again"), callback_data="Start_Again")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     msg = await context.bot.send_message(
         query.message.chat.id,
-        text="Hi. It's Gemini Chat Bot. You can ask me anything and talk to me about what you want",
+        text=_("Hi. It's Gemini Chat Bot. You can ask me anything and talk to me about what you want"),
         reply_markup=reply_markup,
     )
     context.user_data["to_delete_message"] = msg
@@ -155,13 +156,13 @@ async def start_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE)
     await query.answer()
 
     logger.info("Received callback: New_Conversation")
-    message_content = "You asked for a conversation. OK, Let's start conversation!"
+    message_content = _("You asked for a conversation. OK, Let's start conversation!")
 
     conv_id = context.user_data.get("conversation_id")
     if conv_id:
-        message_content = "You asked for a continue conversation. OK, Let's go!"
+        message_content = _("You asked for a continue conversation. OK, Let's go!")
 
-    keyboard = [[InlineKeyboardButton("Return to menu", callback_data="Start_Again")]]
+    keyboard = [[InlineKeyboardButton(_("Return to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     msg = await query.edit_message_text(
         text=message_content,
@@ -179,11 +180,11 @@ async def reply_and_new_message(
     """Send user message to Gemini core and respond and wait for new message or exit command"""
     query = update.callback_query
 
-    keyboard = [[InlineKeyboardButton("Back to menu", callback_data="Start_Again")]]
+    keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     msg = await update.message.reply_text(
-        text="Wait for response processing...",
+        text=_("Wait for response processing..."),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=reply_markup,
     )
@@ -213,12 +214,12 @@ async def reply_and_new_message(
     keyboard = [
         [
             InlineKeyboardButton(
-                "Save and Back to menu", callback_data="Start_Again_SAVE"
+                _("Save and Back to menu"), callback_data="Start_Again_SAVE"
             )
         ],
         [
             InlineKeyboardButton(
-                "Back to menu without saving", callback_data="Start_Again"
+                _("Back to menu without saving"), callback_data="Start_Again"
             )
         ],
     ]
@@ -258,20 +259,20 @@ async def get_conversation_handler(
 
     conversation = select_conversation_by_id(conn, conv_specs)
 
-    message_content = f"Conversation {conversation.get('conv_id')} retrieved and title is: {conversation.get('title')}"
+    message_content = _(f"Conversation {conversation.get('conv_id')} retrieved and title is: {conversation.get('title')}")
 
     keyboard = [
         [
             InlineKeyboardButton(
-                "Continue Conversations", callback_data="New_Conversation"
+                _("Continue Conversations"), callback_data="New_Conversation"
             )
         ],
         [
             InlineKeyboardButton(
-                "Delete Conversation", callback_data="Delete_Conversation"
+                _("Delete Conversation"), callback_data="Delete_Conversation"
             )
         ],
-        [InlineKeyboardButton("Back to menu", callback_data="Start_Again")],
+        [InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -298,11 +299,11 @@ async def delete_conversation_handler(
 
     conversation = delete_conversation_by_id(conn, conv_specs)
 
-    keyboard = [[InlineKeyboardButton("Back to menu", callback_data="Start_Again")]]
+    keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     msg = await query.edit_message_text(
-        text="Conversation history deleted successfully. Back to menu Start new Conversation",
+        text=_("Conversation history deleted successfully. Back to menu Start new Conversation"),
         reply_markup=reply_markup,
         parse_mode=ParseMode.MARKDOWN,
     )
@@ -319,11 +320,11 @@ async def start_image_conversation(
     query = update.callback_query
     logger.info("Received callback: Image_Description")
 
-    keyboard = [[InlineKeyboardButton("Back to menu", callback_data="Start_Again")]]
+    keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     msg = await query.edit_message_text(
-        f"You asked for Image description. OK, Send your image with caption!",
+        _(f"You asked for Image description. OK, Send your image with caption!"),
         reply_markup=reply_markup,
     )
     context.user_data["to_delete_message"] = msg
@@ -339,10 +340,10 @@ async def generate_text_from_image(
     query = update.callback_query
     logger.info("Received callback: generate_text_from_image")
 
-    keyboard = [[InlineKeyboardButton("Back to menu", callback_data="Start_Again")]]
+    keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     msg = await update.message.reply_text(
-        text="Wait for response processing...",
+        text=_("Wait for response processing..."),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=reply_markup,
     )
@@ -360,17 +361,13 @@ async def generate_text_from_image(
     )
 
     try:
-        response = response = (
-            gemini_image_chat.send_image(update.message.caption)
-            .encode("utf-8")
-            .decode("utf-8", "ignore")
-        )
+        response = gemini_image_chat.send_image(update.message.caption)
 
         if not response:
-            raise Exception("Empty response from Gemini")
+            raise Exception(_("Empty response from Gemini"))
     except Exception as e:
         logger.warning("Error during image processing: %s", e)
-        response = "Couldn't generate a response. Please try again."
+        response = _("Couldn't generate a response. Please try again.")
 
     buf.close()
     del photo_file
@@ -419,13 +416,13 @@ async def get_conversation_history(
     if conversations:
         page_content = conversations_page_content(conversations)
     else:
-        page_content = "You have not any chat history"
+        page_content = _("You have not any chat history")
 
     paginator = InlineKeyboardPaginator(
         total_pages, current_page=page_number, data_pattern="PAGE#{page}"
     )
     paginator.add_after(
-        InlineKeyboardButton("Back to menu", callback_data="Start_Again")
+        InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")
     )
 
     msg = await query.edit_message_text(
@@ -458,15 +455,15 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
         [
             InlineKeyboardButton(
-                "Start New Conversation", callback_data="New_Conversation"
+                _("Start New Conversation"), callback_data="New_Conversation"
             )
         ],
-        [InlineKeyboardButton("Image Description", callback_data="Image_Description")],
-        [InlineKeyboardButton("Refresh", callback_data="Start_Again")],
+        [InlineKeyboardButton(_("Image Description"), callback_data="Image_Description")],
+        [InlineKeyboardButton(_("Refresh"), callback_data="Start_Again")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await context.bot.send_message("Until next time!", reply_markup=reply_markup)
+    await context.bot.send_message(_("Until next time!"), reply_markup=reply_markup)
 
     user_data.clear()
     return CHOOSING
