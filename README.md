@@ -49,6 +49,7 @@ https://github.com/sudoAlireza/GeminiBot/assets/87416117/beeb0fd2-73c6-4631-baea
    ```dotenv
    TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
    GEMINI_API_TOKEN=<Your Gemini API key>
+   GEMINI_MODEL=<Your Gemini Model (e.g., gemini-pro, gemini-1.5-flash)>
    AUTHORIZED_USER=<Your Telegram account ID number>
    ```
 

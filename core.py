@@ -1,4 +1,5 @@
 import json
+import os
 import google.generativeai as genai
 import logging
 
@@ -32,9 +33,10 @@ class GeminiChat:
     def _get_model(self, generative_model: str = "gemini-pro") -> genai.GenerativeModel:
         """Gets a generative model instance."""
         try:
-            logging.info("Trying to get generative model")
+            model_name = os.getenv("GEMINI_MODEL", generative_model)
+            logging.info(f"Trying to get generative model: {model_name}")
             return genai.GenerativeModel(
-                generative_model, safety_settings=self.safety_settings
+                model_name, safety_settings=self.safety_settings
             )
         except Exception as e:
             self._handle_exception("get model", e)
