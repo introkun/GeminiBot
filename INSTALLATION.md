@@ -84,8 +84,35 @@ The bot stores conversation data in the `data` directory. This directory is moun
 
 **Steps:**
 
-1.  Set the required environment variables. You can do this by creating a `.env` file in the project root (as described in the "Configuration" section), or by setting them in your shell.
-2.  Build and run the bot using Docker Compose:
+1.  **Provide Environment Variables:** The bot requires environment variables to be set for configuration. You can provide them in one of the following ways:
+
+    *   **Using a `.env` file (recommended):** Create a `.env` file in the project root as described in the "Configuration" section, and then run Docker Compose with the `--env-file` flag:
+
+        ```bash
+        docker-compose --env-file .env up -d --build
+        ```
+
+    *   **Setting variables in your shell:** You can set the environment variables directly in your shell before running Docker Compose:
+
+        ```bash
+        export TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token>
+        export GEMINI_API_TOKEN=<Your Gemini API key>
+        export GEMINI_MODEL=<Your Gemini Model>
+        export AUTHORIZED_USER=<Your Telegram account ID number>
+        docker-compose up -d --build
+        ```
+
+    *   **Using `docker-compose run -e`:** You can pass the environment variables directly to the `run` command:
+
+        ```bash
+        docker-compose run -e TELEGRAM_BOT_TOKEN=<Your Telegram Bot Token> \
+                             -e GEMINI_API_TOKEN=<Your Gemini API key> \
+                             -e GEMINI_MODEL=<Your Gemini Model> \
+                             -e AUTHORIZED_USER=<Your Telegram account ID number> \
+                             geminibot
+        ```
+
+2.  **Build and Run:** Once you have provided the environment variables, build and run the bot using Docker Compose:
 
     ```bash
     docker-compose up -d --build
