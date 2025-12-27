@@ -81,7 +81,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE, conn) -> int:
     """Start the conversation with button and ask the user for input."""
     query = update.callback_query
-    await query.answer()
+    if query:
+        await query.answer()
 
     prev_message = context.user_data.get("to_delete_message")
     if prev_message:
@@ -91,13 +92,13 @@ async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE, conn) -
         context.user_data["to_delete_message"]
 
     try:
-        user_details = query.from_user
+        user_details = update.effective_user
         user_id = user_details.id
         conversation_id = context.user_data.get("conversation_id")
         gemini_chat: GeminiChat = context.user_data.get("gemini_chat")
 
         if gemini_chat or conversation_id:
-            if "_SAVE" in query.data:
+            if query and "_SAVE" in query.data:
                 conversation_history = gemini_chat.get_chat_history()
                 conversation_title = gemini_chat.get_chat_title()
 
@@ -345,6 +346,7 @@ async def start_image_conversation(
 ) -> int:
     """Ask user to upload an image with caption"""
     query = update.callback_query
+    await query.answer()
     logger.info("Received callback: Image_Description")
 
     keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
@@ -356,6 +358,7 @@ async def start_image_conversation(
     )
     context.user_data["to_delete_message"] = msg
 
+    logger.info("Returning IMAGE_CHOICE")
     return IMAGE_CHOICE
 
 
@@ -364,6 +367,7 @@ async def generate_text_from_image(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     """Send image to Gemini core and send response to user"""
+    logger.info("Entered generate_text_from_image")
     logger.info("Received image from user")
     try:
         keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
@@ -399,9 +403,6 @@ async def generate_text_from_image(
         del photo_file
         del image
 
-        keyboard = [[InlineKeyboardButton("Back to menu", callback_data="Start_Again")]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
         try:
             await context.bot.send_message(
                 text=response,
@@ -412,13 +413,13 @@ async def generate_text_from_image(
             await context.bot.delete_message(chat_id=msg.chat_id, message_id=msg.id)
 
         except Exception as e:
+            logging.warning(f"Error sending message with markdown: {e}. Original response: {response}")
             await context.bot.send_message(
                 text=strip_markdown(response),
                 reply_markup=reply_markup,
                 chat_id=update.message.chat_id,
             )
             await context.bot.delete_message(chat_id=msg.chat_id, message_id=msg.id)
-            logging.warning(f"Error sending message: {e}")
     
     except Exception as e:
         logger.error(f"Error in generate_text_from_image: {e}")

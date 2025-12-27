@@ -9,6 +9,7 @@ from telegram.ext import (
     CallbackQueryHandler,
     MessageHandler,
     filters,
+    PicklePersistence,
 )
 from database.database import create_connection, create_table
 from bot.conversation_handlers import (
@@ -79,7 +80,7 @@ def states():
         IMAGE_CHOICE: [
             MessageHandler(
                 filters.PHOTO,
-                lambda update, context: generate_text_from_image(update, context),
+                generate_text_from_image,
             )
         ],
         CONVERSATION: [
@@ -121,12 +122,19 @@ def fallbacks():
 
 def create_conv_handler():
     return ConversationHandler(
-        entry_points=entry_points(), states=states(), fallbacks=fallbacks()
+        entry_points=entry_points(),
+        states=states(),
+        fallbacks=fallbacks(),
+        persistent=True,
+        name="gemini_conversation",
+        per_message=False,
+        allow_reentry=True,
     )
 
 
 def main() -> None:
-    application = Application.builder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
+    persistence = PicklePersistence(filepath="conversation_persistence")
+    application = Application.builder().token(os.getenv("TELEGRAM_BOT_TOKEN")).persistence(persistence).build()
 
     conv_handler = create_conv_handler()
     application.add_handler(conv_handler)
