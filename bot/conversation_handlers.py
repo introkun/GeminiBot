@@ -139,7 +139,7 @@ async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE, conn) -
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     msg = await context.bot.send_message(
-        query.message.chat.id,
+        update.effective_chat.id,
         text=_("Hi. It's Gemini Chat Bot. You can ask me anything and talk to me about what you want"),
         reply_markup=reply_markup,
     )
