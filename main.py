@@ -23,6 +23,7 @@ from bot.conversation_handlers import (
     get_conversation_handler,
     delete_conversation_handler,
     done,
+    reply_to_image_conversation,
 )
 
 # Setup translation
@@ -44,7 +45,7 @@ logger = logging.getLogger(__name__)
 logging.info(f"Selected language: {lang}")
 logging.info(f"Selected log level: {log_level}")
 
-CHOOSING, IMAGE_CHOICE, CONVERSATION, CONVERSATION_HISTORY = range(4)
+CHOOSING, IMAGE_CHOICE, CONVERSATION, CONVERSATION_HISTORY, IMAGE_CONVERSATION = range(5)
 
 
 def entry_points():
@@ -86,7 +87,7 @@ def states():
         CONVERSATION: [
             MessageHandler(
                 filters.TEXT & ~filters.Regex("^/"),
-                lambda update, context: reply_and_new_message(update, context),
+                reply_and_new_message,
             )
         ],
         CONVERSATION_HISTORY: [
@@ -104,6 +105,12 @@ def states():
                 ),
                 pattern="^Delete_Conversation$",
             ),
+        ],
+        IMAGE_CONVERSATION: [
+            MessageHandler(
+                filters.TEXT & ~filters.Regex("^/"),
+                reply_to_image_conversation,
+            )
         ],
     }
 

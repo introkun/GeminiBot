@@ -10,6 +10,7 @@ from functools import wraps
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
+from telegram.error import BadRequest
 import PIL.Image
 
 from core import GeminiChat
@@ -31,7 +32,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-CHOOSING, IMAGE_CHOICE, CONVERSATION, CONVERSATION_HISTORY = range(4)
+CHOOSING, IMAGE_CHOICE, CONVERSATION, CONVERSATION_HISTORY, IMAGE_CONVERSATION = range(5)
 
 
 def restricted(func):
@@ -86,16 +87,20 @@ async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE, conn) -
 
     prev_message = context.user_data.get("to_delete_message")
     if prev_message:
-        await context.bot.delete_message(
-            chat_id=prev_message.chat_id, message_id=prev_message.id
-        )
-        context.user_data["to_delete_message"]
+        try:
+            await context.bot.delete_message(
+                chat_id=prev_message.chat_id, message_id=prev_message.id
+            )
+        except BadRequest:
+            pass  # Ignore if the message is already deleted
+        context.user_data["to_delete_message"] = None
 
     try:
         user_details = update.effective_user
         user_id = user_details.id
         conversation_id = context.user_data.get("conversation_id")
         gemini_chat: GeminiChat = context.user_data.get("gemini_chat")
+        gemini_image_chat: GeminiChat = context.user_data.get("gemini_image_chat")
 
         if gemini_chat or conversation_id:
             if query and "_SAVE" in query.data:
@@ -118,11 +123,16 @@ async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE, conn) -
                 logger.info(f"conversation {conversation_id} closed without saving")
 
             gemini_chat.close()
+
+        if gemini_image_chat:
+            gemini_image_chat.close()
+
         else:
             logger.info("No active chat to close")
 
         gemini_chat = None
         context.user_data["gemini_chat"] = None
+        context.user_data["gemini_image_chat"] = None
         context.user_data["conversation_id"] = None
 
     except Exception as e:
@@ -249,7 +259,10 @@ async def reply_and_new_message(
 
     except Exception as e:
         logger.error(f"Error in reply_and_new_message: {e}")
-        await update.message.reply_text(_("An error occurred while processing your message."))
+        if "429" in str(e):
+            await update.message.reply_text(_("You have exceeded your daily quota for requests. Please try again later."))
+        else:
+            await update.message.reply_text(_("An error occurred while processing your message."))
 
     return CONVERSATION
 
@@ -369,6 +382,8 @@ async def generate_text_from_image(
     """Send image to Gemini core and send response to user"""
     logger.info("Entered generate_text_from_image")
     logger.info("Received image from user")
+    buf = None # Initialize buf to None
+    image = None # Initialize image to None
     try:
         keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -387,21 +402,24 @@ async def generate_text_from_image(
         image = PIL.Image.open(buf)
 
         gemini_image_chat = GeminiChat(
-            gemini_token=os.getenv("GEMINI_API_TOKEN"), image=image
+            gemini_token=os.getenv("GEMINI_API_TOKEN")
         )
+        gemini_image_chat.start_chat(image=image)
 
         try:
-            response = gemini_image_chat.send_image(update.message.caption)
+            prompt = update.message.caption if update.message.caption else "Describe this image"
+            response = gemini_image_chat.send_message(prompt)
 
             if not response:
                 raise Exception(_("Empty response from Gemini"))
         except Exception as e:
             logger.warning("Error during image processing: %s", e)
-            response = _("Couldn't generate a response. Please try again.")
+            if "429" in str(e):
+                response = _("You have exceeded your daily quota for requests. Please try again later.")
+            else:
+                response = _("Couldn't generate a response. Please try again.")
 
-        buf.close()
-        del photo_file
-        del image
+        context.user_data["gemini_image_chat"] = gemini_image_chat
 
         try:
             await context.bot.send_message(
@@ -423,9 +441,65 @@ async def generate_text_from_image(
     
     except Exception as e:
         logger.error(f"Error in generate_text_from_image: {e}")
-        await update.message.reply_text(_("An error occurred while processing the image."))
+        if "429" in str(e):
+            await update.message.reply_text(_("You have exceeded your daily quota for requests. Please try again later."))
+        else:
+            await update.message.reply_text(_("An error occurred while processing the image."))
+    finally:
+        if buf:
+            buf.close()
+        del photo_file
+        del image
 
-    return CHOOSING
+    return IMAGE_CONVERSATION
+
+@restricted
+async def reply_to_image_conversation(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    """Send user message to Gemini core and respond and wait for new message or exit command"""
+    keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    msg = await update.message.reply_text(
+        text=_("Wait for response processing..."),
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=reply_markup,
+    )
+
+    try:
+        text = update.message.text
+        gemini_image_chat = context.user_data.get("gemini_image_chat")
+        
+        response = gemini_image_chat.send_message(text)
+        context.user_data["gemini_image_chat"] = gemini_image_chat
+
+        try:
+            await context.bot.send_message(
+                text=response,
+                parse_mode="Markdown",
+                reply_markup=reply_markup,
+                chat_id=update.message.chat_id,
+            )
+            await context.bot.delete_message(chat_id=msg.chat_id, message_id=msg.id)
+
+        except Exception as e:
+            logging.warning(f"Error sending message with markdown: {e}. Original response: {response}")
+            await context.bot.send_message(
+                text=strip_markdown(response),
+                reply_markup=reply_markup,
+                chat_id=update.message.chat_id,
+            )
+            await context.bot.delete_message(chat_id=msg.chat_id, message_id=msg.id)
+
+    except Exception as e:
+        logger.error(f"Error in reply_to_image_conversation: {e}")
+        if "429" in str(e):
+            await update.message.reply_text(_("You have exceeded your daily quota for requests. Please try again later."))
+        else:
+            await update.message.reply_text(_("An error occurred while processing your message."))
+
+    return IMAGE_CONVERSATION
 
 
 @restricted

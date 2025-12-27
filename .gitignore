@@ -149,6 +149,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# conversation persistence
+conversation_persistence
+
 # pytype static type analyzer
 .pytype/
 
