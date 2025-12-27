@@ -191,6 +191,10 @@ async def reply_and_new_message(
     keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
+    if len(update.message.text) > 2048:
+        await update.message.reply_text(_("Message is too long. Please shorten your message and try again."))
+        return CONVERSATION
+
     msg = await update.message.reply_text(
         text=_("Wait for response processing..."),
         parse_mode=ParseMode.MARKDOWN,
@@ -385,6 +389,11 @@ async def generate_text_from_image(
     buf = None # Initialize buf to None
     image = None # Initialize image to None
     try:
+        photo = update.message.photo[-1]
+        if photo.file_size > 4 * 1024 * 1024:
+            await update.message.reply_text(_("Image is too large. Please send an image smaller than 4MB."))
+            return IMAGE_CONVERSATION
+
         keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         msg = await update.message.reply_text(
@@ -393,7 +402,7 @@ async def generate_text_from_image(
             reply_markup=reply_markup,
         )
 
-        photo_file = await update.message.photo[-1].get_file()
+        photo_file = await photo.get_file()
         buf = io.BytesIO()
         await photo_file.download_to_memory(buf)
         buf.name = "user_image.jpg"
@@ -448,8 +457,8 @@ async def generate_text_from_image(
     finally:
         if buf:
             buf.close()
-        del photo_file
-        del image
+        if image:
+            del image
 
     return IMAGE_CONVERSATION
 
@@ -458,6 +467,10 @@ async def reply_to_image_conversation(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     """Send user message to Gemini core and respond and wait for new message or exit command"""
+    if len(update.message.text) > 2048:
+        await update.message.reply_text(_("Message is too long. Please shorten your message and try again."))
+        return IMAGE_CONVERSATION
+
     keyboard = [[InlineKeyboardButton(_("Back to menu"), callback_data="Start_Again")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
