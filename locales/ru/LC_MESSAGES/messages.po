@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-26 18:46-0400\n"
+"POT-Creation-Date: 2025-12-26 22:18-0400\n"
 "PO-Revision-Date: 2025-12-26 18:54-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,26 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: bot/conversation_handlers.py:64 bot/conversation_handlers.py:134
-#: bot/conversation_handlers.py:458
+#: bot/conversation_handlers.py:63 bot/conversation_handlers.py:134
+#: bot/conversation_handlers.py:495
 msgid "Start New Conversation"
 msgstr "Начать новый диалог"
 
-#: bot/conversation_handlers.py:67 bot/conversation_handlers.py:137
-#: bot/conversation_handlers.py:461
+#: bot/conversation_handlers.py:66 bot/conversation_handlers.py:137
+#: bot/conversation_handlers.py:498
 msgid "Image Description"
 msgstr "Описание изображения"
 
-#: bot/conversation_handlers.py:70 bot/conversation_handlers.py:138
+#: bot/conversation_handlers.py:69 bot/conversation_handlers.py:138
 msgid "Chat History"
 msgstr "История чата"
 
-#: bot/conversation_handlers.py:74 bot/conversation_handlers.py:144
+#: bot/conversation_handlers.py:73 bot/conversation_handlers.py:144
 msgid ""
 "Hi. It's Gemini Chat Bot. You can ask me anything and talk to me about "
 "what you want"
-msgstr "Привет. Это чат-бот «Близнецы». Вы можете задать мне любой вопрос "
-"и поговорить со мной о том, что вас интересует."
+msgstr ""
+"Привет. Это чат-бот «Близнецы». Вы можете задать мне любой вопрос и "
+"поговорить со мной о том, что вас интересует."
 
 #: bot/conversation_handlers.py:139
 msgid "Start Again"
@@ -56,58 +57,99 @@ msgstr "Вы попросили продолжить разговор. Хоро�
 msgid "Return to menu"
 msgstr "Вернуться в меню"
 
-#: bot/conversation_handlers.py:183 bot/conversation_handlers.py:275
-#: bot/conversation_handlers.py:302 bot/conversation_handlers.py:323
-#: bot/conversation_handlers.py:343 bot/conversation_handlers.py:425
+#: bot/conversation_handlers.py:181 bot/conversation_handlers.py:287
+#: bot/conversation_handlers.py:326 bot/conversation_handlers.py:352
+#: bot/conversation_handlers.py:373 bot/conversation_handlers.py:458
 msgid "Back to menu"
 msgstr "Назад в меню"
 
-#: bot/conversation_handlers.py:187 bot/conversation_handlers.py:346
+#: bot/conversation_handlers.py:185 bot/conversation_handlers.py:376
 msgid "Wait for response processing..."
 msgstr "Ожидайте обработку ответа..."
 
-#: bot/conversation_handlers.py:217
+#: bot/conversation_handlers.py:202
+msgid ""
+"Sorry, I couldn't find the history for this conversation. Let's start a "
+"new one."
+msgstr "Извините, я не смог найти историю этой беседы. Давайте начнем новую."
+
+#: bot/conversation_handlers.py:221
 msgid "Save and Back to menu"
 msgstr "Сохранить и вернуться в меню"
 
-#: bot/conversation_handlers.py:222
+#: bot/conversation_handlers.py:226
 msgid "Back to menu without saving"
 msgstr "Вернуться в меню без сохранения"
 
-#: bot/conversation_handlers.py:267
+#: bot/conversation_handlers.py:252
+msgid "An error occurred while processing your message."
+msgstr "Произошла ошибка при обработке вашего сообщения."
+
+#: bot/conversation_handlers.py:271
+msgid "Conversation not found."
+msgstr "Разговор не найден."
+
+#: bot/conversation_handlers.py:279
 msgid "Continue Conversations"
 msgstr "Продолжить диалоги"
 
-#: bot/conversation_handlers.py:272
+#: bot/conversation_handlers.py:284
 msgid "Delete Conversation"
 msgstr "Удалить диалог"
 
-#: bot/conversation_handlers.py:306
+#: bot/conversation_handlers.py:298
+msgid "An error occurred while retrieving the conversation."
+msgstr "Произошла ошибка при получении разговора."
+
+#: bot/conversation_handlers.py:314
+msgid "No conversation selected for deletion."
+msgstr "Не выбран разговор для удаления."
+
+#: bot/conversation_handlers.py:323
+msgid "Could not delete the conversation. It may have been already deleted."
+msgstr "Не удалось удалить разговор. Возможно, он уже был удален."
+
+#: bot/conversation_handlers.py:330
 msgid ""
 "Conversation history deleted successfully. Back to menu Start new "
 "Conversation"
 msgstr "История диалогов успешно удалена. Назад в меню Начать новый диалог"
 
-#: bot/conversation_handlers.py:327
-msgid "You asked for Image description. OK, Send your image with caption!"
-msgstr "Вы попросили описание изображения. Хорошо, отправьте свое изображение с подписью!"
+#: bot/conversation_handlers.py:338
+msgid "An error occurred while deleting the conversation."
+msgstr "Произошла ошибка при удалении разговора."
 
-#: bot/conversation_handlers.py:367
+#: bot/conversation_handlers.py:356
+msgid "You asked for Image description. OK, Send your image with caption!"
+msgstr ""
+"Вы попросили описание изображения. Хорошо, отправьте свое изображение с "
+"подписью!"
+
+#: bot/conversation_handlers.py:397
 msgid "Empty response from Gemini"
 msgstr "Пустой ответ от Gemini"
 
-#: bot/conversation_handlers.py:370
+#: bot/conversation_handlers.py:400
 msgid "Couldn't generate a response. Please try again."
 msgstr "Не удалось сгенерировать ответ. Пожалуйста, попробуйте еще раз."
 
-#: bot/conversation_handlers.py:419
+#: bot/conversation_handlers.py:426
+msgid "An error occurred while processing the image."
+msgstr "Произошла ошибка при обработке изображения."
+
+#: bot/conversation_handlers.py:452
 msgid "You have not any chat history"
 msgstr "У вас нет истории чатов"
 
-#: bot/conversation_handlers.py:462
+#: bot/conversation_handlers.py:470
+msgid "An error occurred while retrieving the conversation history."
+msgstr "Произошла ошибка при получении истории разговоров."
+
+#: bot/conversation_handlers.py:499
 msgid "Refresh"
 msgstr "Обновить"
 
-#: bot/conversation_handlers.py:466
+#: bot/conversation_handlers.py:503
 msgid "Until next time!"
 msgstr "До скорого!"
+
